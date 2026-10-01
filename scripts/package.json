@@ -1,0 +1,8 @@
+{
+  "name": "aave-alerts",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "ethers": "^6.17.0"
+  }
+}

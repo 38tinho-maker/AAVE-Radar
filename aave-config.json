@@ -1,0 +1,36 @@
+{
+  "hf": {
+    "ethereum": {
+      "warn": 1.5,
+      "urgent": 1.2
+    },
+    "arbitrum": {
+      "warn": 1.5,
+      "urgent": 1.2
+    },
+    "base": {
+      "warn": 1.5,
+      "urgent": 1.2
+    },
+    "polygon": {
+      "warn": 1.5,
+      "urgent": 1.2
+    }
+  },
+  "borrowApyMax": {
+    "USDC": 8,
+    "USDT": 8,
+    "WETH": 4
+  },
+  "rateDiffMin": 1,
+  "rateNotices": {},
+  "nativeYield": {
+    "weETH": 2.8,
+    "rETH": 2.6,
+    "cbETH": 2.7,
+    "osETH": 2.6,
+    "ezETH": 2.9,
+    "rsETH": 2.9
+  },
+  "rpc": {}
+}
