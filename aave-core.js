@@ -1,5 +1,5 @@
 // Núcleo Aave v3: leitura on-chain (browser e Node). Recebe a lib ethers v6 por parâmetro.
-export const VERSION = '1.2';
+export const VERSION = '1.3';
 
 export const CHAINS = {
   ethereum: { name: 'Ethereum', id: 1, pool: '0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2', oracle: '0x54586bE62E3c3580375aE3723C145253060Ca0C2', rpc: 'https://ethereum-rpc.publicnode.com' },

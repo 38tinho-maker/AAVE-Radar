@@ -1,4 +1,4 @@
-# Aave — v1.2 (app próprio)
+# Aave — v1.3 (app próprio)
 
 App para acompanhar suas posições na Aave v3 (Ethereum, Arbitrum, Base, Polygon) no iPhone, com alertas no ntfy.
 
@@ -27,7 +27,7 @@ No repo antigo: **Settings → General → (fim da página) Delete this reposito
 
 1. Abra o link no Safari → **Compartilhar → Adicionar à Tela de Início**.
 2. No primeiro acesso você cria o PIN, e o app oferece ativar o Face ID.
-3. Em **Ajustes**: cole as carteiras, o repositório (`usuario/aave`) e o token → **Salvar**.
+3. Em **Ajustes**: adicione as carteiras (com apelido), o repositório (`usuario/aave`) e o token → **Salvar**.
    O app guarda a carteira no iPhone e cria o Secret `AAVE_WALLETS` sozinho.
 
 ## 4. Alertas (ntfy)

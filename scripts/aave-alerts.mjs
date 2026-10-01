@@ -25,7 +25,13 @@ if (!FORCE && !state.low && now - state.lastFull < FULL_EVERY_MS) {
 }
 
 // Carteiras vêm do Secret AAVE_WALLETS (nunca do repositório). Logs não mostram carteira nem posição: em repo público os logs são públicos.
-const wallets = (process.env.AAVE_WALLETS || '').split(/[\s,;]+/).filter(w => ethers.isAddress(w));
+const raw = (process.env.AAVE_WALLETS || '').trim();
+let entries = [];
+try { entries = JSON.parse(raw).map(e => (typeof e === 'string' ? { a: e, l: '' } : e)); }
+catch { entries = raw.split(/[\s,;]+/).map(a => ({ a, l: '' })); }
+entries = entries.filter(e => e && ethers.isAddress(e.a));
+const wallets = entries.map(e => e.a);
+const labelOf = (w) => { const i = entries.findIndex(e => e.a.toLowerCase() === w.toLowerCase()); return entries[i]?.l || `Carteira ${i + 1}`; };
 if (!wallets.length) { console.log('Secret AAVE_WALLETS vazio ou ausente.'); process.exit(0); }
 const wid = (w) => crypto.createHash('sha256').update(w.toLowerCase()).digest('hex').slice(0, 10);
 
@@ -52,28 +58,28 @@ for (const key of Object.keys(CHAINS)) {
   const name = CHAINS[key].name;
 
   for (const a of res.accounts) {
-    const who = wallets.length > 1 ? ` (${short(a.wallet)})` : '';
+    const who = wallets.length > 1 ? ` (${labelOf(a.wallet)})` : '';
     if (a.debtUsd > 0.01) {
       if (a.hf < lim.warn) anyLow = true;
       if (a.hf < lim.urgent) {
         const k = `hf:${key}:${wid(a.wallet)}:urgent`; active.add(k);
-        alerts.push({ key: k, level: 'urgent', repeat: URGENT_REPEAT_MS, title: `Aave ${name}: HF ${fmt(a.hf)}`, body: `Health Factor abaixo de ${fmt(lim.urgent)}${who}. Risco de liquidação.` });
+        alerts.push({ key: k, level: 'urgent', repeat: URGENT_REPEAT_MS, title: `Aave ${name}${who}: HF ${fmt(a.hf)}`, body: `Health Factor abaixo de ${fmt(lim.urgent)}. Risco de liquidação.` });
       } else if (a.hf < lim.warn) {
         const k = `hf:${key}:${wid(a.wallet)}:warn`; active.add(k);
-        alerts.push({ key: k, level: 'warn', repeat: Infinity, title: `Aave ${name}: HF ${fmt(a.hf)}`, body: `Health Factor abaixo de ${fmt(lim.warn)}${who}.` });
+        alerts.push({ key: k, level: 'warn', repeat: Infinity, title: `Aave ${name}${who}: HF ${fmt(a.hf)}`, body: `Health Factor abaixo de ${fmt(lim.warn)}.` });
       }
     }
     for (const p of a.positions.filter(p => p.side === 'borrow')) {
       const max = cfg.borrowApyMax?.[p.symbol];
       if (max != null && max !== '' && p.apy > Number(max)) {
         const k = `apy:${key}:${wid(a.wallet)}:${p.symbol}`; active.add(k);
-        alerts.push({ key: k, level: 'info', repeat: REMIND_MS, title: `Aave ${name}: borrow ${p.symbol} ${fmt(p.apy)}%`, body: `APY de empréstimo acima do limite de ${fmt(Number(max), 1)}%${who}.` });
+        alerts.push({ key: k, level: 'info', repeat: REMIND_MS, title: `Aave ${name}${who}: borrow ${p.symbol} ${fmt(p.apy)}%`, body: `APY de empréstimo acima do limite de ${fmt(Number(max), 1)}%.` });
       }
     }
     for (const l of loopChecks(a, nativeYield)) {
       if (l.spread <= 0) {
         const k = `loop:${key}:${wid(a.wallet)}:${l.group}`; active.add(k);
-        alerts.push({ key: k, level: 'info', repeat: REMIND_MS, title: `Aave ${name}: loop ${l.group} não compensa`, body: `Depósito ${fmt(l.supplyApy)}% vs empréstimo ${fmt(l.borrowApy)}% (spread ${fmt(l.spread)} p.p.)${who}.` });
+        alerts.push({ key: k, level: 'info', repeat: REMIND_MS, title: `Aave ${name}${who}: loop ${l.group} não compensa`, body: `Depósito ${fmt(l.supplyApy)}% vs empréstimo ${fmt(l.borrowApy)}% (spread ${fmt(l.spread)} p.p.).` });
       }
     }
   }
